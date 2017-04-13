@@ -10,6 +10,11 @@ var users = require('./routes/users');
 
 var app = express();
 
+// grab constiables from .env
+if (app.get('env') === 'development') {
+	require('dotenv').config();
+}
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -22,6 +27,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/api', require('./routes/api'))
 app.use('/', index);
 app.use('/users', users);
 
