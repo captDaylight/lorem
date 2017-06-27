@@ -2,7 +2,6 @@ const csv = require('fast-csv');
 const fs = require('fs');
 const md5 = require('md5');
 const { INPUT, COLUMN } = process.env;
-// const writableStream = fs.createWriteStream(INPUT.split('.csv')[0] + '_modified.csv');
 
 let isFirst = true;
 let columnIndex;
@@ -22,4 +21,3 @@ fs.createReadStream(INPUT)
     return data;
   })
   .pipe(fs.createWriteStream(INPUT.split('.csv')[0] + '_modified.csv', {encoding: "utf8"}));
-  // .pipe(writableStream)
