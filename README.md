@@ -2,4 +2,4 @@
 
 Update CSV:
 
-`INPUT=data/test.csv COLUMN="Link ID" node addUniqueToCSV.js `
+`INPUT=data/test.csv COLUMN="Link ID" node addUniqueToCSV.js`
