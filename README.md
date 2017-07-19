@@ -16,3 +16,8 @@ Update CSV:
 - push site live
 - email with merge tag and link to website
 - run through flow
+
+
+
+next
+submit email param to backend and increment the point
