@@ -21,21 +21,31 @@ mailchimp.get({
   console.log('err', err);
 })
 
-router.post('/user/:email', function(req, res, next) {
+router.put('/user/:email', function(req, res, next) {
   if (!req.params.email) res.json({ result: 'error', msg: 'must send an email'});
   // update a specific member
   // https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members/#
-
-  mailchimp.patch({
+  mailchimp.get({
     path: 'lists/5def810f98/members/' + req.params.email,
-    body: {
-      merge_fields: {
-        REF_COUNT: 2,
-      }
-    }
   })
-    .then(function(res) {
-      console.log('success', res);
+    .then(function(user) {
+      console.log('success', user);
+      const newRefCount = user.merge_fields.REF_COUNT === '' ? 1 : user.merge_fields.REF_COUNT + 1;
+      mailchimp.patch({
+        path: 'lists/5def810f98/members/' + req.params.email,
+        body: {
+          merge_fields: {
+            REF_COUNT: newRefCount,
+          }
+        }
+      })
+        .then(function(user) {
+          res.json({ result: 'success', data: user });
+        })
+    })
+    .catch(function(data) {
+      console.log('hmm', data);
+      res.json({ result: 'error', msg: 'Could not find user.' });
     })
 });
 

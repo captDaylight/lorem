@@ -40,7 +40,8 @@
       <!--End mc_embed_signup-->
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
       <script>
-        console.log('herere');
+        var emailHash = <% if (typeof hash !== 'undefined') { %> "<%= hash %>" <%} else {%> null <% }%>;
+        console.log(window.location.origin);
         $(document).ready( function () {
           // I only have one form on the page but you can be more specific if need be.
           var $form = $('form');
@@ -70,8 +71,19 @@
               } else {
                 // It worked, carry on...
                 console.log('worked', data);
-
                 // hit our api with the email
+                if (emailHash) {
+                  $.ajax({
+                    url: window.location.origin + '/api/user/' + emailHash,
+                    type: 'PUT',
+                    success: function(data) {
+                      console.log('YES', data);
+                    },
+                    error: function(XMLHttpRequest, textStatus, errorThrown) {
+                      alert("some error");
+                    }
+                  })
+                }
 
               }
             }
