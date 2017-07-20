@@ -6,18 +6,6 @@ Update CSV:
 
 
 ## TODO
+- check if you can add query parameters to squarespace
+- add a way to notify when a threshhold has been met
 
-- create input field that signs up a new user
-- convert csv
-- upload csv
-- fetch user by hash
-- update user by hash
-
-- push site live
-- email with merge tag and link to website
-- run through flow
-
-
-
-next
-submit email param to backend and increment the point
