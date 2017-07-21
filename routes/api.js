@@ -1,6 +1,17 @@
 const express = require('express');
 const router = express.Router();
 // const models = require('../models');
+var nodemailer = require('nodemailer');
+
+const threshholds = [3,5,10,20]
+
+var transporter = nodemailer.createTransport({
+  service: 'Gmail',
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.EMAIL_PASS,
+  }
+});
 
 const Mailchimp = require('mailchimp-api-v3')
 console.log(process.env.MAILCHIMP_KEY);
@@ -41,6 +52,24 @@ router.put('/user/:email', function(req, res, next) {
       })
         .then(function(user) {
           res.json({ result: 'success', data: user });
+          console.log('GRET', user.merge_fields.REF_COUNT);
+
+          const threshholdIdx = threshholds.indexOf(user.merge_fields.REF_COUNT);
+          if (threshholdIdx >= 0) {
+            var mailOptions = {
+              from: process.env.EMAIL,
+              to: 'paul.christophe6@gmail.com',
+              subject: 'Referral threshhold met',
+              text: user.email_address + ' met threshhold ' + threshholds[threshholdIdx],
+            };
+            transporter.sendMail(mailOptions, function(error, info){
+              if (error) {
+                console.log(error);
+              } else {
+                console.log('Email sent: ' + info.response);
+              }
+            });
+          }
         })
     })
     .catch(function(data) {
