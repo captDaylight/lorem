@@ -14,7 +14,6 @@ var transporter = nodemailer.createTransport({
 });
 
 const Mailchimp = require('mailchimp-api-v3')
-console.log(process.env.MAILCHIMP_KEY);
 
 const mailchimp = new Mailchimp(process.env.MAILCHIMP_KEY);
 
@@ -22,8 +21,6 @@ mailchimp.get({
   path: 'lists/5def810f98/members'
 })
 .then(function (result) {
-  console.log('---', result.members.length);
-  // console.log('result', result);
   result.members.forEach((m) => {
     console.log(m.merge_fields);
   })
@@ -40,7 +37,6 @@ router.put('/user/:email', function(req, res, next) {
     path: 'lists/5def810f98/members/' + req.params.email,
   })
     .then(function(user) {
-      console.log('success', user);
       const newRefCount = user.merge_fields.REF_COUNT === '' ? 1 : user.merge_fields.REF_COUNT + 1;
       mailchimp.patch({
         path: 'lists/5def810f98/members/' + req.params.email,
@@ -52,7 +48,6 @@ router.put('/user/:email', function(req, res, next) {
       })
         .then(function(user) {
           res.json({ result: 'success', data: user });
-          console.log('GRET', user.merge_fields.REF_COUNT);
 
           const threshholdIdx = threshholds.indexOf(user.merge_fields.REF_COUNT);
           if (threshholdIdx >= 0) {
@@ -73,7 +68,6 @@ router.put('/user/:email', function(req, res, next) {
         })
     })
     .catch(function(data) {
-      console.log('hmm', data);
       res.json({ result: 'error', msg: 'Could not find user.' });
     })
 });
