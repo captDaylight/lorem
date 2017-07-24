@@ -16,5 +16,4 @@ https://lorem-zcsxweeohr.now.sh
 ```
 
 ## TODO
-- check if you can add query parameters to squarespace
-- add a way to notify when a threshhold has been met
+- how is the current lorem ipsum form being submitted
