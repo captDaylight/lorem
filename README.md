@@ -16,4 +16,5 @@ https://lorem-zcsxweeohr.now.sh
 ```
 
 ## TODO
-- how is the current lorem ipsum form being submitted
+- fix cors issue after email submit https://medium.com/@littleStudent/cors-and-micro-services-with-now-sh-a805708a4e93
+- tack on the name of each email added to the user object
