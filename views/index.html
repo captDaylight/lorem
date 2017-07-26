@@ -59,6 +59,7 @@
           $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
+
             data: $form.serialize(),
             cache       : false,
             dataType    : 'json',
@@ -74,6 +75,7 @@
                 // hit our api with the email
                 if (emailHash) {
                   $.ajax({
+                    crossDomain: true,
                     url: window.location.origin + '/api/user/' + emailHash,
                     type: 'PUT',
                     success: function(data) {
