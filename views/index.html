@@ -56,10 +56,10 @@
         });
 
         function register($form) {
+          console.log('--', $form.serializeArray()[0].value);
           $.ajax({
             type: $form.attr('method'),
             url: $form.attr('action'),
-
             data: $form.serialize(),
             cache       : false,
             dataType    : 'json',
@@ -78,6 +78,7 @@
                     crossDomain: true,
                     url: window.location.origin + '/api/user/' + emailHash,
                     type: 'PUT',
+                    data: {email: $form.serializeArray()[0].value},
                     success: function(data) {
                       console.log('YES', data);
                     },
