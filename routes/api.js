@@ -3,10 +3,34 @@ const router = express.Router();
 // const models = require('../models');
 const md5 = require('md5');
 var nodemailer = require('nodemailer');
-var listID = '5def810f98';
+var listID = '2ef70b0e24';
+
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://captaindaylight:' + encodeURIComponent(process.env.DBPASS) + '@loremproduction-shard-00-00-i94rt.mongodb.net:27017,loremproduction-shard-00-01-i94rt.mongodb.net:27017,loremproduction-shard-00-02-i94rt.mongodb.net:27017/'+ process.env.DB +'?ssl=true&replicaSet=loremproduction-shard-0&authSource=admin',{
+  useMongoClient: true
+});
+var db = mongoose.connection;
+db.on('error', function(err) {
+  console.log('error', err);
+});
+db.once('open', function() {
+  console.log('WERE ON');
+  console.log(mongoose.connection.readyState);
+  var kittySchema = mongoose.Schema({
+    name: String
+  });
+  var Kitten = mongoose.model('Kitten', kittySchema);
+  var silence = new Kitten({ name: 'Silence' });
+  console.log(silence.name); // 'Silence'
+  silence.save(function (err, cat) {
+    if (err) return console.error(err);
+    console.log('we have cat', cat);
+  });
+});
 
 const threshholds = [3,5,10,20]
-
+console.log('PASS', process.env.EMAIL_PASS);
+console.log('PASS', process.env.EMAIL);
 var transporter = nodemailer.createTransport({
   service: 'Gmail',
   auth: {
@@ -15,21 +39,36 @@ var transporter = nodemailer.createTransport({
   }
 });
 
+var mailOptions = {
+  from: process.env.EMAIL,
+  to: 'paul.christophe6@gmail.com',
+  subject: 'Email test working',
+  text: 'this is a test to make sure that the email sender is verifying and sending',
+};
+
+transporter.sendMail(mailOptions, function(error, info){
+  if (error) {
+    console.log(error);
+  } else {
+    console.log('Email sent: ' + info.response);
+  }
+});
+
 const Mailchimp = require('mailchimp-api-v3')
 
 const mailchimp = new Mailchimp(process.env.MAILCHIMP_KEY);
 
-mailchimp.get({
-  path: 'lists/' + listID + '/members'
-})
-.then(function (result) {
-  result.members.forEach((m) => {
-    console.log(m.merge_fields);
-  })
-})
-.catch(function (err) {
-  console.log('err', err);
-})
+// mailchimp.get({
+//   path: 'lists/' + listID + '/members'
+// })
+// .then(function (result) {
+//   result.members.forEach((m) => {
+//     console.log(m.merge_fields);
+//   })
+// })
+// .catch(function (err) {
+//   console.log('err', err);
+// })
 
 router.put('/user/:email', function(req, res, next) {
   if (!req.params.email) res.json({ result: 'error', msg: 'must send an email'});
@@ -69,7 +108,10 @@ router.put('/user/:email', function(req, res, next) {
             if (threshholdIdx >= 0) {
               var mailOptions = {
                 from: process.env.EMAIL,
-                to: 'paul.christophe6@gmail.com',
+                to: [
+                  'tom+referrals@loremipsum.wtf',
+                  'margot+referrals@loremipsum.wtf',
+                  'referrals@loremipsum.wtf'],
                 subject: 'Referral threshhold met',
                 text: user.email_address + ' met threshhold ' + threshholds[threshholdIdx],
               };
