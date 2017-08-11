@@ -7,7 +7,12 @@ Update CSV:
 
 DEPLOYING TO NOW WITH ENVIRONMENT VARS
 ```
-now deploy -e EMAIL=@email -e EMAIL_PASS=@email_pass -e MAILCHIMP_KEY=@mailchimp_key
+now deploy -e EMAIL=@email -e EMAIL_PASS=@email_pass -e MAILCHIMP_KEY=@mailchimp_key -e LISTID=@listid -e DB=@db -e DBPASS=@dbpass
+```
+
+ALIASING
+```
+now alias https://lorem-npcnzjzopx.now.sh lorem-ipsum-now
 ```
 
 goes live to
