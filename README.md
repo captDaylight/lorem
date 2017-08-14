@@ -21,5 +21,6 @@ https://lorem-zcsxweeohr.now.sh
 ```
 
 ## TODO
-- tack on the name of each email added to the user object
-- get consistent now url so I don't have to keep updating the api call in squarespace
+- add any referrers in mailchimp to teh db
+- display names on the website
+- person can't add their own email Address
