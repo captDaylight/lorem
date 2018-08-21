@@ -98,24 +98,22 @@ db.once('open', function() {
               const referralsCount = user.merge_fields.REFERRALS.split(',').length;
               const threshholdIdx = threshholds.indexOf(referralsCount);
 
-              if (threshholdIdx >= 0) {
-                var mailOptions = {
-                  from: process.env.EMAIL,
-                  to: [
-                    'tom+referrals@loremipsum.wtf',
-                    'margot+referrals@loremipsum.wtf',
-                    'referrals@loremipsum.wtf'],
-                  subject: 'Referral threshhold met',
-                  text: user.email_address + ' met threshhold ' + threshholds[threshholdIdx],
-                };
-                transporter.sendMail(mailOptions, function(error, info){
-                  if (error) {
-                    console.log(error);
-                  } else {
-                    console.log('Email sent: ' + info.response);
-                  }
-                });
-              }
+              var mailOptions = {
+                from: process.env.EMAIL,
+                to: [
+                  'margot+referrals@loremipsum.wtf',
+                  'referrals@loremipsum.wtf'
+                ],
+                subject: 'Referral threshhold met',
+                text: user.email_address + ' met threshhold ' + threshholds[threshholdIdx],
+              };
+              transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                  console.log(error);
+                } else {
+                  console.log('Email sent: ' + info.response);
+                }
+              });
             }
 
           })
