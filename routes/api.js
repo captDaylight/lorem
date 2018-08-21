@@ -15,23 +15,14 @@ var transporter = nodemailer.createTransport({
   }
 });
 
-var mailOptions = {
-  from: process.env.EMAIL,
-  to: 'paul.christophe6@gmail.com',
-  subject: 'Email test working',
-  text: 'this is a test to make sure that the email sender is verifying and sending',
-};
-
-// transporter.sendMail(mailOptions, function(error, info){
-//   if (error) {
-//     console.log(error);
-//   } else {
-//     console.log('Email sent: ' + info.response);
-//   }
-// });
+// var mailOptions = {
+//   from: process.env.EMAIL,
+//   to: 'paul.christophe6@gmail.com',
+//   subject: 'Email test working',
+//   text: 'this is a test to make sure that the email sender is verifying and sending',
+// };
 
 const Mailchimp = require('mailchimp-api-v3')
-
 const mailchimp = new Mailchimp(process.env.MAILCHIMP_KEY);
 
 var mongoose = require('mongoose');
@@ -48,45 +39,25 @@ db.once('open', function() {
     referrals: [String],
   });
   var Referrer = mongoose.model('Referrer', referrerSchema);
-  // var silence = new Kitten({ name: 'Silence' });
-  var kittySchema = mongoose.Schema({
-    name: String,
-  });
-  var Kitten = mongoose.model('Kitten', kittySchema);
-  router.get('/', function(req, res, next) {
-    console.log('hi');
-    // Kitten.findOne({ name: 'Silence' }, function(err, kitten) {
-    //   console.log(err, kitten);
-    //   kitten.update({name: kitten.name + 'paul'}, function(k) {
-    //     res.json({ status: true, data: k });
-    //
-    //
-    //   })
-    // });
-
-    Kitten.find(function(err, kittens) {
-      res.json({ status: true, data: kittens });
-    });
-  });
 
   router.put('/user/:email', function(req, res, next) {
     if (!req.params.email) res.json({ result: 'error', msg: 'must send an email'});
     // update a specific member
     // https://developer.mailchimp.com/documentation/mailchimp/reference/lists/members/#
     var newEmail = req.body.email ? req.body.email : '';
+
     console.log('sending to', 'lists/' + listID + '/members?unique_email_id=' + req.params.email);
+
     mailchimp.get({
       path: 'lists/' + listID + '/members?unique_email_id=' + req.params.email,
     })
       .then(function(search) {
         const user = search.members[0];
         let newReferrals = user.merge_fields.REFERRALS;
-        console.log('new email', newEmail);
-        console.log('index of', user.merge_fields.REFERRALS.indexOf(newEmail));
+
         if (user.merge_fields.REFERRALS.indexOf(newEmail) < 0) {
           newReferrals = newReferrals === '' ? newEmail : user.merge_fields.REFERRALS + ',' + newEmail;
         }
-        console.log('newReferrals:', newReferrals);
 
         mailchimp.patch({
           path: 'lists/' + listID + '/members/' + md5(user.email_address.toLowerCase()),
@@ -98,27 +69,9 @@ db.once('open', function() {
         })
           .then(function(user) {
             res.json({ result: 'success', data: user });
-            console.log('SUCCESS');
-            console.log(user.merge_fields.REFERRALS);
-            //
-            // Referrer.findOneOrUpdate(
-            //   { email: user.email_address },
-            //   {
-            //     $inc: { referralCount: 1 },
-            //     $push: { referrals: newEmail };
-            //   },
-            //   { upsert: true, new: true },
-            //   function(referrer) {
-            //     console.log('created or updatet', referrer);
-            //   }
-            // )
-            Referrer.find(function(r) {
-              console.log('-----', r);
-            })
+
             Referrer.findOne({ email: user.email_address }, function(err, referrer) {
-              console.log('found ONE???');
               if (referrer) {
-                console.log('found refererer, updating');
                 Referrer.findOneAndUpdate(
                   { email: user.email_address },
                   {
@@ -131,7 +84,6 @@ db.once('open', function() {
                 );
               } else {
                 // create new referrer
-                console.log('creating new');
                 const newReferrer = new Referrer({
                   email: user.email_address,
                   referrals: user.merge_fields.REFERRALS !== '' ? user.merge_fields.REFERRALS.split(',') : [newEmail],
@@ -145,7 +97,7 @@ db.once('open', function() {
             if (user.merge_fields.REFERRALS !== '') {
               const referralsCount = user.merge_fields.REFERRALS.split(',').length;
               const threshholdIdx = threshholds.indexOf(referralsCount);
-              console.log('referralsCount', referralsCount);
+
               if (threshholdIdx >= 0) {
                 var mailOptions = {
                   from: process.env.EMAIL,
@@ -173,15 +125,16 @@ db.once('open', function() {
       })
   });
 });
+
 mailchimp.get({
   path: 'lists/' + listID + '/members'
-})
-.then(function (result) {
-  result.members.forEach((m) => {
-    console.log(m.unique_email_id, m.email_address);
+}).then(function (result) {
+    result.members.forEach((m) => {
+      console.log(m.unique_email_id, m.email_address);
+    })
   })
-})
-.catch(function (err) {
-  console.log('err', err);
-})
+  .catch(function (err) {
+    console.log('err', err);
+  });
+
 module.exports = router;
