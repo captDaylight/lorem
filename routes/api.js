@@ -3,7 +3,7 @@ const router = express.Router();
 // const models = require('../models');
 const md5 = require('md5');
 var nodemailer = require('nodemailer');
-var listID = process.env.LISTID;
+var listID = '02b3162a83';
 
 const threshholds = [3,5,10,20]
 
